@@ -10,11 +10,12 @@
     *.dict.yaml    码表文件：置换所有「仅由 [a-z'] 组成且含字母」的列（code、stem）
     *.schema.yaml  方案文件：置换 xlit|abc|字根| 行中的字根显示串
 
-完成后将 rime-cangjie/ 全部内容（不含 .git）复制到 build/。
+完成后将 rime-cangjie/ 全部内容（不含 .git）复制到 build/，然后还原
+rime-cangjie/ 的改动，使其保持干净（结果只保留在 build/ 中）。
 
 幂等性说明:
     本脚本直接原地修改 rime-cangjie/。置换做两次会叠加，因此运行前要求
-    rime-cangjie/ 的 git 工作区干净；重复运行前请先:
+    rime-cangjie/ 的 git 工作区干净；若上次 --write 后还原失败，请先:
         git -C rime-cangjie restore .
     或使用 --force 跳过检查。
 
@@ -214,6 +215,20 @@ def remap_xlit_file(
         print(f"已写入 {path}")
 
 
+def reset_submodule() -> None:
+    """还原 rime-cangjie/ 中的改动，只保留 build/ 里的置换结果。"""
+    import subprocess
+
+    r = subprocess.run(
+        ["git", "-C", str(DIR), "restore", "."],
+        capture_output=True,
+        text=True,
+    )
+    if r.returncode != 0:
+        sys.exit(f"git restore 失败: {r.stderr.strip()}")
+    print(f"已还原 {DIR} 到干净状态")
+
+
 def copy_to_build() -> None:
     """清空并重建 build/，复制 rime-cangjie 全部内容（不含 .git）。"""
     if BUILD.exists():
@@ -261,6 +276,7 @@ def main() -> None:
 
     if write:
         copy_to_build()
+        reset_submodule()
         print("\n完成。若键位有变，请重新部署 fcitx5。")
     else:
         print("\n以上为试运行结果。确认无误后加 --write 参数实际写入并生成 build/。")
