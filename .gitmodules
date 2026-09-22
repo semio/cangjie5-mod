@@ -1,0 +1,3 @@
+[submodule "rime-cangjie"]
+	path = rime-cangjie
+	url = https://github.com/rime/rime-cangjie
