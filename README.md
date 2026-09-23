@@ -7,4 +7,6 @@
 本仓库的 remap_cangjie.py 是一个修改码表的脚本，它读取 mappings.tsv 里定义的英语和仓
 颉字母对应关系，然后修改 rime-cangjie 中的码表和配置，使之符合你定义的键位。
 
+脚本由 glm-5.3-flash 写成。
+
 注：修改完必需清除原本的用户词库 （userdb 目录、sync目录）然后重新部署。
